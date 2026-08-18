@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0
+
+* Updated: Rewrote the `appwrite-cli` skill as guidance rather than a command catalog, deferring flag listings to `appwrite <command> --help`
+* Added: When to use `appwrite.config.json` versus a one-off `appwrite client` call
+* Added: Separation of authentication from project selection, including CI keys and `--force` on TTY-less runs
+* Added: Cloud regional endpoints and why `whoami` keeps the account login host
+* Added: Which resources belong to `pull`/`push` and which are service commands only
+* Added: Generating type-safe application code from the local config with `appwrite generate`
+
 ## 0.2.1
 
 * Fixed: Permission and access-control wording in skills updated for TablesDB (`row`/`table` instead of `document`/`collection`)
