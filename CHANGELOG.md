@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0
+
+* Added: `Query` relationship, aggregation, grouping, join and builder examples in every SDK skill
+
 ## 0.3.0
 
 * Updated: Rewrote the `appwrite-cli` skill as guidance rather than a command catalog, deferring flag listings to `appwrite <command> --help`
