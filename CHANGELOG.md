@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0
+
+* Added: `init project` closest-region behaviour, the unknown-location fallback and `--region` in the `appwrite-cli` skill
+
 ## 0.4.0
 
 * Added: `Query` relationship, aggregation, grouping, join and builder examples in every SDK skill
