@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0
+
+* Added: `plugin.json` and `mcp.json`, so the repository installs as an [Agent Plugin](https://agent-plugins.org) with the skills and the hosted Appwrite MCP server
+
 ## 0.5.0
 
 * Added: `init project` closest-region behaviour, the unknown-location fallback and `--region` in the `appwrite-cli` skill
