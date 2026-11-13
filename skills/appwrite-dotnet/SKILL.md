@@ -21,8 +21,8 @@ using Appwrite.Models;
 
 var client = new Client()
     .SetEndpoint("https://<REGION>.cloud.appwrite.io/v1")
-    .SetProject(Environment.GetEnvironmentVariable("APPWRITE_PROJECT_ID"))
-    .SetKey(Environment.GetEnvironmentVariable("APPWRITE_API_KEY"));
+    .SetProject(System.Environment.GetEnvironmentVariable("APPWRITE_PROJECT_ID"))
+    .SetKey(System.Environment.GetEnvironmentVariable("APPWRITE_API_KEY"));
 ```
 
 ## Code Examples
