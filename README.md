@@ -46,11 +46,11 @@ If you use Claude Code, Cursor, or Codex, the Appwrite plugin for that tool bund
 | `appwrite-rust` | Rust servers |
 | `appwrite-dotnet` | C# and .NET servers |
 | `appwrite-cli` | The Appwrite CLI: project config, deployments, and code generation |
-| `appwrite-hansi-status` | Reading Appwrite Review's current tier and open findings on a pull request |
-| `appwrite-hansi-loop` | Fixing a pull request until Appwrite Review grades it Tier S |
-| `appwrite-hansi-learn` | Saving a lasting review rule by replying on a finding |
-| `appwrite-hansi-setup` | Configuring a repository's reviews with `.hansi.json` |
-| `appwrite-hansi-threads` | Keeping agents from resolving review threads Appwrite Review clears itself |
+| `appwrite-review-status` | Reading Appwrite Review's current tier and open findings on a pull request |
+| `appwrite-review-loop` | Fixing a pull request until Appwrite Review grades it Tier S |
+| `appwrite-review-learn` | Saving a lasting review rule by replying on a finding |
+| `appwrite-review-setup` | Configuring a repository's reviews with `.hansi.json` |
+| `appwrite-review-threads` | Keeping agents from resolving review threads Appwrite Review clears itself |
 
 ## Usage
 

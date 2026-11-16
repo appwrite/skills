@@ -1,13 +1,13 @@
 ---
-name: appwrite-hansi-setup
-description: Creates or updates .hansi.json for Hansi (Appwrite Review). Sets path filters, profile, and instructions, then opens a pull request so the file lands on the base branch. Use when the user wants to configure Hansi or Appwrite Review for a repository, add review instructions, exclude paths, or run hansi-setup.
+name: appwrite-review-setup
+description: Creates or updates .hansi.json for Appwrite Review. Sets path filters, profile, and instructions, then opens a pull request so the file lands on the base branch. Use when the user wants to configure Appwrite Review for a repository, add review instructions, exclude paths, or run review-setup.
 ---
 
-# Hansi setup
+# Appwrite Review setup
 
-Hansi is the reviewer behind Appwrite Review. Write `.hansi.json` at the repository root and get it onto the pull request's base branch. Hansi reads that file, and the guideline files, from the base branch only. A copy that exists solely on a feature branch does nothing until it is merged.
+Write `.hansi.json` at the repository root and get it onto the pull request's base branch. Appwrite Review reads that file, and the guideline files, from the base branch only. A copy that exists solely on a feature branch does nothing until it is merged.
 
-Settings that are not in the file, such as which repositories a project reviews and how hard (the review strength), live under Review in the Appwrite Console. Do not request a Hansi review. Do not push to the default branch. Do not enable `reviews.approveOutsideContributors` unless the user explicitly asks.
+Settings that are not in the file, such as which repositories a project reviews and how hard (the review strength), live under Review in the Appwrite Console. Do not request a review. Do not push to the default branch. Do not enable `reviews.approveOutsideContributors` unless the user explicitly asks.
 
 The command blocks are examples, written for git and the GitHub CLI. Run whatever this environment actually provides to do the same job, including commands the examples do not list. If `gh` or `git` is missing, or a command fails because of how this machine authenticates, try another client before stopping.
 Prefer a Git remote this environment can already authenticate to.
@@ -18,9 +18,9 @@ Prefer a Git remote this environment can already authenticate to.
 
 ## Instructions
 
-### 1. Read the config Hansi uses today
+### 1. Read the config Appwrite Review uses today
 
-`origin` may be a fork. The branch Hansi reads is on the pull request's base repository, which can be a different repo.
+`origin` may be a fork. The branch Appwrite Review reads is on the pull request's base repository, which can be a different repo.
 
 `parent` does not include `nameWithOwner` or a default branch. Build the parent repository from its owner and name.
 
@@ -60,7 +60,7 @@ Read `.hansi.json` from `<BASE_REPO>`:
 gh api "repos/<BASE_REPO>/contents/.hansi.json?ref=<BASE>" --jq .content | base64 -d
 ```
 
-A 404 means there is no file yet. Also list which guideline files exist on that same ref. Hansi includes each of these in full when it is present: `AGENTS.md`, `CLAUDE.md`, `.cursorrules`, `.github/copilot-instructions.md`. Do not copy them into `instructions`.
+A 404 means there is no file yet. Also list which guideline files exist on that same ref. Appwrite Review includes each of these in full when it is present: `AGENTS.md`, `CLAUDE.md`, `.cursorrules`, `.github/copilot-instructions.md`. Do not copy them into `instructions`.
 
 ### 2. Decide the edits
 
@@ -85,7 +85,7 @@ Every field is optional. Omit a field when it would only restate the default. Ke
 
 `profile`: `chill` flags confirmed bugs only. `balanced` also flags risky patterns, weak or missing tests, and broken documentation examples. `strict` also counts naming, style, and maintainability.
 
-`pathFilters`: a pattern without `!` is an allowlist, and files outside it are skipped. A pattern with `!` excludes. Do not add an allowlist unless the user asked for one. `dist/`, `build/`, vendored code, and images are already ignored. So are lockfiles, snapshots, and generated files, unless the organization lets Hansi run commands: then Hansi checks them by installing, running the tests, or regenerating. Do not repeat those.
+`pathFilters`: a pattern without `!` is an allowlist, and files outside it are skipped. A pattern with `!` excludes. Do not add an allowlist unless the user asked for one. `dist/`, `build/`, vendored code, and images are already ignored. So are lockfiles, snapshots, and generated files, unless the organization lets Appwrite Review run commands: then the review checks them by installing, running the tests, or regenerating. Do not repeat those.
 
 Always set `$schema` to `https://hansi.codes/schema/v1.json`.
 
@@ -114,16 +114,16 @@ Fetch through a remote this environment can already authenticate to. Use an exis
 
 ```bash
 git fetch <REMOTE> "+refs/heads/<BASE>:refs/remotes/<REMOTE>/<BASE>"
-git checkout -b hansi-config "<REMOTE>/<BASE>"
+git checkout -b review-config "<REMOTE>/<BASE>"
 ```
 
-If `hansi-config` already exists, pick another branch name. Use the branch you created as `<BRANCH>`.
+If `review-config` already exists, pick another branch name. Use the branch you created as `<BRANCH>`.
 
 Write `.hansi.json` at the repository root. Commit only that file. Push `<BRANCH>` to `<HEAD_REPO>` through a remote that already authenticates to that repository. When `origin` is `<HEAD_REPO>`, that remote is `origin`. When it is not, use or add a remote for `<HEAD_REPO>` the same way as the fetch above. Do not push to a raw HTTPS URL that this environment has no credentials for.
 
 ```bash
 git add .hansi.json
-git commit -m "Configure Hansi reviews."
+git commit -m "Configure Appwrite Review."
 git push -u origin HEAD
 ```
 
@@ -131,16 +131,16 @@ Open the pull request on `<BASE_REPO>`. When `<HEAD_REPO>` and `<BASE_REPO>` are
 
 ```bash
 gh pr create --repo "<BASE_REPO>" --base "<BASE>" --head "<BRANCH>" \
-  --title "Configure Hansi reviews" \
-  --body "Adds .hansi.json. Hansi reads it from the base branch after merge."
+  --title "Configure Appwrite Review" \
+  --body "Adds .hansi.json. Appwrite Review reads it from the base branch after merge."
 ```
 
 When they differ, the head is the fork branch `<HEAD_OWNER>:<BRANCH>`:
 
 ```bash
 gh pr create --repo "<BASE_REPO>" --base "<BASE>" --head "<HEAD_OWNER>:<BRANCH>" \
-  --title "Configure Hansi reviews" \
-  --body "Adds .hansi.json. Hansi reads it from the base branch after merge."
+  --title "Configure Appwrite Review" \
+  --body "Adds .hansi.json. Appwrite Review reads it from the base branch after merge."
 ```
 
 If the user asked to include it in the current pull request, commit it on that branch instead and say it takes effect once that pull request merges into `<BASE>` on `<BASE_REPO>`.
@@ -148,7 +148,7 @@ If the user asked to include it in the current pull request, commit it on that b
 ### 4. Report
 
 ```
-hansi-setup
+review-setup
   Base repository: owner/repo
   Base branch:     main
   Pull request:    https://github.com/owner/repo/pull/123
@@ -159,4 +159,4 @@ Changed:
   - instructions: We use Result types instead of exceptions in src/domain.
 ```
 
-Say which guideline files already exist on `<BASE>`, so the user knows Hansi will read those too.
+Say which guideline files already exist on `<BASE>`, so the user knows Appwrite Review will read those too.

@@ -1,13 +1,13 @@
 ---
-name: appwrite-hansi-loop
-description: Iteratively improves a GitHub pull request until Hansi (Appwrite Review) grades it Tier S (ready to merge) with zero unresolved comments. Triggers a review, fixes actionable findings, pushes, and repeats. Use when the user wants to clear Hansi's or Appwrite Review's comments, reach Tier S, loop on review comments, or run hansi-loop.
+name: appwrite-review-loop
+description: Iteratively improves a GitHub pull request until Appwrite Review grades it Tier S (ready to merge) with zero unresolved comments. Triggers a review, fixes actionable findings, pushes, and repeats. Use when the user wants to clear Appwrite Review's comments, reach Tier S, loop on review comments, or run review-loop.
 ---
 
-# Hansi loop
+# Appwrite Review loop
 
-Hansi is the reviewer behind Appwrite Review. Fix a pull request until Hansi grades it **Tier S** (ready to merge) and leaves no unresolved comments.
+Fix a pull request until Appwrite Review grades it **Tier S** (ready to merge) and leaves no unresolved comments.
 
-Each review counts toward the Appwrite project's review usage. Do not request a new review when the current head already has a finished Hansi review and you have not pushed anything since.
+Each review counts toward the Appwrite project's review usage. Do not request a new review when the current head already has a finished review from Appwrite Review and you have not pushed anything since.
 
 The command blocks are examples, written for git and the GitHub CLI. Run whatever this environment actually provides to do the same job, including commands the examples do not list. If `gh` or `git` is missing, or a command fails because of how this machine authenticates, try another client before stopping.
 
@@ -33,7 +33,7 @@ Use the `number` from that JSON as `<PR_NUMBER>` in every later command. Check o
 
 ### 2. Find the summary and the mention handle
 
-Hansi keeps one issue comment per pull request up to date and edits it in place. Its body starts with the marker `<!-- appwrite-hansi:summary:<REPOSITORY_ID> -->`, where `<REPOSITORY_ID>` is the Appwrite Review repository that wrote it.
+Appwrite Review keeps one issue comment per pull request up to date and edits it in place. Its body starts with the marker `<!-- appwrite-hansi:summary:<REPOSITORY_ID> -->`, where `<REPOSITORY_ID>` is the Appwrite Review repository that wrote it.
 
 ```bash
 gh api --paginate "repos/{owner}/{repo}/issues/<PR_NUMBER>/comments?per_page=100" \
@@ -42,7 +42,7 @@ gh api --paginate "repos/{owner}/{repo}/issues/<PR_NUMBER>/comments?per_page=100
 
 There is usually one. Several Appwrite projects can review the same repository, and each writes its own summary. When there are several and the user did not say which project they mean, work with each one separately and say which is which. Never mix findings from two summaries.
 
-The footer looks like `Comment <code>@app-name review</code> to re-run`. That `@<slug>` is Hansi's mention handle on this repository; take it from inside the `<code>` tag. Review comments are authored by `<slug>[bot]`.
+The footer looks like `Comment <code>@app-name review</code> to re-run`. That `@<slug>` is Appwrite Review's mention handle on this repository; take it from inside the `<code>` tag. Review comments are authored by `<slug>[bot]`.
 
 The `Hansi` check run of a summary is the one whose `external_id` is that summary's `<REPOSITORY_ID>`:
 
@@ -111,7 +111,7 @@ while true; do
     printf '%s' "$CHECK" | jq -r '"Hansi check completed: \(.conclusion) — \(.output.title)"'
     break
   fi
-  echo "Waiting for Hansi... ($STATUS)"
+  echo "Waiting for the Hansi check... ($STATUS)"
   sleep 10
 done
 ```
@@ -119,21 +119,21 @@ done
 Stop the loop, and do not use an older review, when:
 
 - polling times out
-- `conclusion` is `skipped` (drafts, disabled reviews, or a base branch Hansi does not review)
+- `conclusion` is `skipped` (drafts, disabled reviews, or a base branch Appwrite Review does not review)
 - the check title is `Review failed`
 
-`failure` means Hansi requested changes. `neutral` means it commented. Both are finished reviews: keep going and read the comments.
+`failure` means Appwrite Review requested changes. `neutral` means it commented. Both are finished reviews: keep going and read the comments.
 
 #### B. Read the review
 
-Fetch the summary comment again (the command in step 2). Hansi edits that same comment in place. Parse:
+Fetch the summary comment again (the command in step 2). Appwrite Review edits that same comment in place. Parse:
 
 - **Tier**, from the heading `Tier S` through `Tier F`. **S** means ready to merge. Open findings cap it: a minor finding means at most **A**, a major one at most **B**, a critical one at most **D**. Informational notes do not lower it.
 - **Verdict table**: new comments, fixed, and still open.
 - **Findings table** of comments posted on this review. A row is a title plus a file and line.
 - **Still open from earlier reviews**, inside the `⏳ Still open from earlier reviews` details block.
 - **Filtered out**, inside the `🔇 Filtered out` details block. These were considered and not posted. Include the reason.
-- **Approval withheld**, a `> [!NOTE]` block. Hansi will not approve in that case. A note about an open bug finding clears once that finding is fixed or dismissed. A note about write access or an incomplete diff does not.
+- **Approval withheld**, a `> [!NOTE]` block. Appwrite Review will not approve in that case. A note about an open bug finding clears once that finding is fixed or dismissed. A note about write access or an incomplete diff does not.
 
 Then read the threads.
 
@@ -161,37 +161,37 @@ query($cursor: String) {
 
 Page with `endCursor` while `hasNextPage` is true. A finding comment starts with a bold title, then the explanation, sometimes a `suggestion` block, and a footer like `Major · bug`. When several projects review the repository, all of their findings come from the same bot account: match a thread to a summary by its title in that summary's findings tables.
 
-Also read the latest Hansi review body. If GitHub rejected the inline comments, the findings are in that body instead of threads. Treat those as open too.
+Also read the latest review body from Appwrite Review. If GitHub rejected the inline comments, the findings are in that body instead of threads. Treat those as open too.
 
 #### C. Stop when the pull request is clean
 
 Stop when **all** of these are true:
 
 - The tier in the current summary is **S**
-- Hansi has **no unresolved threads**, and the summary has no findings still open
+- Appwrite Review has **no unresolved threads**, and the summary has no findings still open
 - You are not waiting on a review of commits you just pushed
 
-Then, if the latest `Hansi` check on this head is `failure` (the pull request is still in "changes requested"), request **one** `@<slug> review` and wait for it, so Hansi can submit the approval. Do not repeat that extra review. If the follow-up still does not approve, stop and report the summary note. A withheld approval or `reviews.approve: false` in `.hansi.json` will not become an approval.
+Then, if the latest `Hansi` check on this head is `failure` (the pull request is still in "changes requested"), request **one** `@<slug> review` and wait for it, so Appwrite Review can submit the approval. Do not repeat that extra review. If the follow-up still does not approve, stop and report the summary note. A withheld approval or `reviews.approve: false` in `.hansi.json` will not become an approval.
 
 Also stop when the fifth iteration finishes. Report whatever is left.
 
-#### D. Fix what Hansi asked for
+#### D. Fix what Appwrite Review asked for
 
-For each unresolved Hansi finding:
+For each unresolved Appwrite Review finding:
 
 1. Read the file, the diff hunk, and the comment.
 2. Fix it in the code when it describes a real bug. Apply a suggestion block only when it actually fixes that bug.
-3. When the comment does not apply, reply on **that thread** with a short reason. A reply to a finding is enough; you do not need to mention Hansi again. Hansi answers, and dismisses the finding when it agrees.
+3. When the comment does not apply, reply on **that thread** with a short reason. A reply to a finding is enough; you do not need to mention Appwrite Review again. Appwrite Review answers, and dismisses the finding when it agrees.
 
 ```bash
 gh api "repos/{owner}/{repo}/pulls/<PR_NUMBER>/comments/<COMMENT_ID>/replies" -f body='...'
 ```
 
-Do **not** call `resolveReviewThread` yourself. Resolving a thread in GitHub leaves the finding open in Hansi's summary, so the tier stays capped. Hansi resolves the thread when a later review sees the fix, or when it dismisses the finding after your reply.
+Do **not** call `resolveReviewThread` yourself. Resolving a thread in GitHub leaves the finding open in Appwrite Review's summary, so the tier stays capped. Appwrite Review resolves the thread when a later review sees the fix, or when it dismisses the finding after your reply.
 
 #### E. Wait for replies before reviewing again
 
-If you replied on any thread, wait until Hansi has answered (it reacts with 👀, then comments) or about 5 minutes have passed. A dismissal updates the summary comment. Read it again before you decide the iteration still needs code changes.
+If you replied on any thread, wait until Appwrite Review has answered (it reacts with 👀, then comments) or about 5 minutes have passed. A dismissal updates the summary comment. Read it again before you decide the iteration still needs code changes.
 
 #### F. Commit and push code changes
 
@@ -199,7 +199,7 @@ If you changed files, commit only those files. Leave unrelated work unstaged.
 
 ```bash
 git add path/to/file
-git commit -m "Address Hansi review feedback (iteration N)"
+git commit -m "Address Appwrite Review feedback (iteration N)"
 git push
 ```
 
@@ -212,7 +212,7 @@ If the only action was thread replies and nothing remains open, go back to step 
 After the loop, summarize:
 
 ```
-hansi-loop complete.
+review-loop complete.
   Pull request:  #123
   Iterations:    2
   Tier:          S
@@ -223,7 +223,7 @@ hansi-loop complete.
 When the loop stops early:
 
 ```
-hansi-loop stopped after 5 iterations.
+review-loop stopped after 5 iterations.
   Pull request:  #123
   Tier:          A
   Resolved:      6 comments
@@ -233,4 +233,4 @@ Remaining issues:
   - src/auth.ts:45 — "Session cookie is not marked HttpOnly"
 ```
 
-Include the pull request URL. If Hansi withheld approval, say so in the report even when the tier is **S** and nothing is left open.
+Include the pull request URL. If Appwrite Review withheld approval, say so in the report even when the tier is **S** and nothing is left open.
