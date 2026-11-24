@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.0
+
+* Added: `appwrite zero` in the `appwrite-cli` skill, so agents start a project with no account and hand the user the claim link
+* Fixed: server SDK skills forward the user agent through a per-request admin client, not the session client, where it had no effect
+
 ## 0.6.0
 
 * Added: `plugin.json` and `mcp.json`, so the repository installs as an [Agent Plugin](https://agent-plugins.org) with the skills and the hosted Appwrite MCP server
