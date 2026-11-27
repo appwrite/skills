@@ -1,7 +1,7 @@
 {
     "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
     "name": "appwrite",
-    "version": "0.7.0",
+    "version": "0.8.0",
     "description": "Appwrite skills for AI coding agents, with the hosted Appwrite MCP server.",
     "author": {
         "name": "Appwrite",
